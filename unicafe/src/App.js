@@ -13,12 +13,12 @@ const App = () => {
 
   const handleClick = (text) => {
       if(text === 'good'){
-            setGood(curr=>curr+1)
+            setGood(curr => curr+1)
        }else if(text === 'neutral'){
-            setNeutral(curr=> curr+1)
-        }else{
+            setNeutral(curr => curr+1)
+       }else{
             setBad(curr => curr+1)
-        }
+       }
      }
 
     
@@ -52,7 +52,7 @@ const App = () => {
         <p>average: {calcAverage()}</p>
         <p>positive: {calcPositive()}%</p>
         </div>
-     : null
+     : <p>No feedback given</p>
     }
     </div>
   )
