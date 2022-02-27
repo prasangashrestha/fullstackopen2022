@@ -50,14 +50,12 @@ const App = () => {
     useEffect(() => {
         axios.get('https://restcountries.com/v3.1/all')
         .then((res) => {
-            console.log(res)
             setCountries(res.data)
         })
     }, [])
 
     const handleFilter = e => {
-        setFilterName(e.target.value)
-        console.log(filterName)                        
+        setFilterName(e.target.value)                       
     }
 
     const filteredCountries = () => {

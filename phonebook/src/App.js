@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const Person = ({person : {name, number, id}, handleSubmit}) => {
+    return (
+        <div>
+            {name} {number}
+            <button onClick = {(e) => {return window.confirm(`Do you want to delete ${name}`) && handleSubmit(e, id)}}>Delete</button>
+        </div>
+    )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
@@ -14,20 +23,59 @@ const App = () => {
     })
   }, [])
   
+  const addPerson = e => {
+      e.preventDefault()
+      const newPerson = { 
+          name: newName,
+          number: newNumber
+      }
+
+      axios.post('http://localhost:3001/persons', newPerson)
+           .then(res => {
+               setPersons([...persons, newPerson])
+           })
+  }
+
+  const updatePerson = (e,id) => {
+      e.preventDefault()
+      const url = `http://localhost:3001/persons/${id}`
+      const newPerson = {
+          id: id,
+          name: newName,
+          number: newNumber
+      }
+
+      axios.put(url, newPerson)
+                .then(res => {
+                     setPersons(persons.map(person => person.id !== id ? person : res.data))
+                })
+
+  }
+
+  const deletePerson = (e, id) => {
+      e.preventDefault()
+      const url = `http://localhost:3001/persons/${id}`
+      axios.delete(url)
+            .then(res => {
+                setPersons(persons.filter(person => person.id !== id))
+            })
+       
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const existing = persons.find(person => person.name === newName)
+    const existing = persons.find(person => person.name === newName) 
 
     if(!existing){
-        const newPerson = {name: newName, number:newNumber}
-        setPersons([...persons, newPerson])
+        addPerson(e)
     }else{
-        alert(`${newName} is already added to the phonebook`)
+        if(window.confirm(`${newName} already exists in the database. Do you want to update the number?`))
+            updatePerson(e, existing.id)
     }
 
     setNewName('')
+    setNewNumber('')
     
   }
   
@@ -47,13 +95,14 @@ const App = () => {
       
       return persons
             .filter(person => person.name.toLowerCase().includes(filterName.toLowerCase()))
-            .map(person => <p>{person.name} {person.number}</p>)
+            .map(person => {
+               return  <Person key = {person.id} person = {person} handleSubmit={deletePerson}/>
+            } )
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-
       <p>
           filter shown with 
           <input value={filterName} onChange={handleChangeFilter}/>
