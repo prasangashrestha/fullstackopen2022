@@ -18,8 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "json-server -p3001 --watch db.json",
-    "app" : "npm run server & npm run start"
+    "app" : "npm run start"
   },
   "eslintConfig": {
     "extends": [

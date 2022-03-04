@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import {getAllService, createPersonService, updatePersonService, deletePersonService} from './services/persons'
 
 const Person = ({person : {name, number, id}, handleSubmit}) => {
     return (
@@ -17,9 +17,9 @@ const App = () => {
   const [filterName, setFilterName] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
+    getAllService()
     .then(res => {
-        setPersons(res.data)
+        setPersons(res)
     })
   }, [])
   
@@ -30,32 +30,32 @@ const App = () => {
           number: newNumber
       }
 
-      axios.post('http://localhost:3001/persons', newPerson)
+      createPersonService(newPerson)
            .then(res => {
-               setPersons([...persons, newPerson])
+               setPersons([...persons, res])
+               
            })
   }
 
   const updatePerson = (e,id) => {
       e.preventDefault()
-      const url = `http://localhost:3001/persons/${id}`
       const newPerson = {
           id: id,
           name: newName,
           number: newNumber
       }
 
-      axios.put(url, newPerson)
+      updatePersonService(id, newPerson)
                 .then(res => {
-                     setPersons(persons.map(person => person.id !== id ? person : res.data))
+                     setPersons(persons.map(person => person.id !== id ? person : res))
                 })
 
   }
 
   const deletePerson = (e, id) => {
       e.preventDefault()
-      const url = `http://localhost:3001/persons/${id}`
-      axios.delete(url)
+      
+      deletePersonService(id)
             .then(res => {
                 setPersons(persons.filter(person => person.id !== id))
             })
@@ -92,8 +92,10 @@ const App = () => {
   }
 
   const getfilteredName = () => {
-      
-      return persons
+      //console.log(persons.length)
+      return persons.length> 0 
+            &&
+            persons
             .filter(person => person.name.toLowerCase().includes(filterName.toLowerCase()))
             .map(person => {
                return  <Person key = {person.id} person = {person} handleSubmit={deletePerson}/>

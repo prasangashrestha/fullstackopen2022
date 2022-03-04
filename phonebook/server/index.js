@@ -1,7 +1,9 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 app.use(morgan(function (tokens, req, res) {
@@ -54,6 +56,17 @@ app.get('/api/persons/:id', (req, res) => {
     }else{
         res.status(404).end()
     }
+})
+
+app.put('/api/persons/:id', (req,res) => {
+    const id = Number(req.params.id)
+    const newPerson = req.body
+     persons.map( person => {
+        if(person.id === id){
+            person = newPerson
+        }
+    })
+    res.json(newPerson)
 })
 
 app.delete('/api/persons/:id', (req,res) => {
